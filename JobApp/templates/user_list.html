@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>User Profiles</h2>
+
+        <!-- Search Form -->
+        <form method="GET" action="{% url 'user_list' %}" class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search by username" aria-label="Search" name="search" value="{{ search_query }}">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+
+        <!-- Users List -->
+        <div class="mt-4">
+            {% if users %}
+                <ul class="list-group">
+                    {% for user in users %}
+                        <li class="list-group-item">
+                            <strong>{{ user.username }}</strong><br>
+                            Email: {{ user.email }}<br>
+                            {% if user.profile %}
+                                Full Name: {{ user.profile.full_name }}<br>
+                                Phone: {{ user.profile.phone }}<br>
+                            {% else %}
+                                Profile not completed
+                            {% endif %}
+                            <a href="{% url 'admin_user_detail' user.id %}" class="btn btn-primary mt-2">View Profile</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No users found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

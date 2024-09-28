@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ internship.title }} - Internship Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #212529; /* Dark background */
+            color: #f8f9fa; /* Light text color */
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #343a40; /* Darker container background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #f8f9fa; /* Light text color for headings */
+        }
+        p {
+            color: #f8f9fa; /* Light text color for paragraphs */
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ internship.title }}</h1>
+        <p><strong>Location:</strong> {{ internship.location }}</p>
+        <p><strong>Domain:</strong> {{ internship.domain_name }}</p>
+        <p><strong>Posted on:</strong> {{ internship.posted_on|date:"F j, Y" }}</p>
+        <p><strong>Description:</strong></p>
+        <p>{{ internship.description }}</p>
+        <a href="{% url 'apply_internship' internship.id %}" class="btn btn-primary">Apply for this Internship</a>
+        <a href="{% url 'user_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</body>
+</html>

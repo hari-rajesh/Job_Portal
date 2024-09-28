@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        .form-container form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-container h2 {
+            color: #333;
+        }
+        .form-container button {
+            margin-top: 10px;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .section a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .section a:hover {
+            text-decoration: underline;
+        }
+        .delete-btn {
+            color: #dc3545;
+            text-decoration: none;
+        }
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Edit Profile for {{ user.username }}</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" name="save_changes">Save Changes</button>
+        </form>
+    </div>
+
+    <!-- Change Password Section -->
+    <div class="section">
+        <h2>Change Password</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ password_form.as_p }}
+            <button type="submit" name="change_password">Change Password</button>
+        </form>
+    </div>
+
+    <!-- Delete Profile Section -->
+    <div class="section">
+        <h2>Delete Profile</h2>
+        <p><a href="{% url 'admin_delete_user' user.pk %}" class="delete-btn">Delete Profile</a></p>
+        <p><a href="{% url 'user_list' %}">Back to User List</a></p>
+    </div>
+</body>
+</html>

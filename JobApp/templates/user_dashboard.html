@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #212529;
+            color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            color: #f8f9fa;
+        }
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .section ul li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #343a40;
+            border: 1px solid #495057;
+            border-radius: 5px;
+        }
+        .section ul li a {
+            color: #17a2b8;
+            text-decoration: none;
+        }
+        .section ul li a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            margin-top: 10px;
+        }
+        .btn-info {
+            margin-top: 10px;
+        }
+        .btn-danger {
+            margin-top: 10px;
+            margin-left: 10px;
+        }
+        .btn-primary {
+            margin-top: 10px;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .profile-details {
+            background-color: #343a40;
+            padding: 20px;
+            border: 1px solid #495057;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .profile-details p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .profile-details p strong {
+            display: inline-block;
+            width: 150px;
+        }
+        .form-container {
+            background-color: #343a40;
+            padding: 20px;
+            border: 1px solid #495057;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .form-container input[type="text"],
+        .form-container input[type="number"],
+        .form-container input[type="tel"],
+        .form-container input[type="email"],
+        .form-container input[type="file"] {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="profile-nav">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="available-nav">Available Jobs & Internships</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="applied-nav">Applied Jobs & Internships</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="mt-3">User Dashboard</h2>
+
+        <!-- Profile Information -->
+        <div id="profile-section" class="section">
+            <h2>Profile</h2>
+            <div id="profile-details" class="profile-details text-center">
+                {% if has_photo %}
+                    <img src="{{ user.profile.photo.url }}" alt="Profile Photo" class="profile-img">
+                {% else %}
+                    <p>No profile photo available</p>
+                {% endif %}
+                <div class="mt-3">
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Age:</strong> {{ user.profile.age }}</p>
+                    <p><strong>Phone Number:</strong> {{ user.profile.phone_number }}</p>
+                </div>
+                <button id="edit-profile-btn" class="btn btn-primary">Edit Profile</button>
+            </div>
+
+            <div id="profile-form-container" class="form-container" style="display: none;">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ profile_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Available Jobs and Internships -->
+        <div id="available-section" class="content-section">
+            <div class="section">
+                <h2>Available Jobs</h2>
+                <form id="job-search-form" class="form-inline mb-3">
+                    <input type="text" name="search" id="job-search-input" class="form-control mr-sm-2" placeholder="Search jobs & Internships by name" value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <ul id="jobs-list">
+                    <!-- Job listings will be dynamically populated here -->
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Available Internships</h2>
+                <ul id="internships-list">
+                    <!-- Internship listings will be dynamically populated here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Applied Jobs and Internships -->
+        <div id="applied-section" class="content-section">
+            <div class="section">
+                <h2>Applied Jobs</h2>
+                <ul>
+                    {% for application in applied_jobs %}
+                        <li>
+                            <strong>{{ application.job.title }}</strong><br>
+                            Applied on: {{ application.applied_on|date:"F j, Y" }}<br>
+                            Status: {{ application.status }}
+                            <a href="{% url 'delete_applied_job' application.job.id %}" class="btn btn-danger">Remove</a>
+                        </li>
+                    {% empty %}
+                        <li>No jobs applied.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Applied Internships</h2>
+                <ul>
+                    {% for application in applied_internships %}
+                        <li>
+                            <strong>{{ application.internship.title }}</strong><br>
+                            Applied on: {{ application.applied_on|date:"F j, Y" }}<br>
+                            Status: {{ application.status }}
+                            <a href="{% url 'delete_applied_internship' application.internship.id %}" class="btn btn-danger">Remove</a>
+                        </li>
+                    {% empty %}
+                        <li>No internships applied.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const profileNav = document.getElementById("profile-nav");
+            const availableNav = document.getElementById("available-nav");
+            const appliedNav = document.getElementById("applied-nav");
+            const profileSection = document.getElementById("profile-section");
+            const availableSection = document.getElementById("available-section");
+            const appliedSection = document.getElementById("applied-section");
+            const editProfileBtn = document.getElementById("edit-profile-btn");
+            const profileFormContainer = document.getElementById("profile-form-container");
+            const cancelEditBtn = document.getElementById("cancel-edit-btn");
+
+            function showProfileSection() {
+                profileSection.style.display = "block";
+                availableSection.style.display = "none";
+                appliedSection.style.display = "none";
+            }
+
+            function showAvailableSection() {
+                profileSection.style.display = "none";
+                availableSection.style.display = "block";
+                appliedSection.style.display = "none";
+            }
+
+            function showAppliedSection() {
+                profileSection.style.display = "none";
+                availableSection.style.display = "none";
+                appliedSection.style.display = "block";
+            }
+
+            profileNav.addEventListener("click", showProfileSection);
+            availableNav.addEventListener("click", showAvailableSection);
+            appliedNav.addEventListener("click", showAppliedSection);
+
+            editProfileBtn.addEventListener("click", function () {
+                profileFormContainer.style.display = "block";
+                document.getElementById("profile-details").style.display = "none";
+            });
+
+            cancelEditBtn.addEventListener("click", function () {
+                profileFormContainer.style.display = "none";
+                document.getElementById("profile-details").style.display = "block";
+            });
+
+            // Initially show profile section
+            showProfileSection();
+
+            // Function to update job and internship listings
+            function updateListings(searchQuery = '') {
+                $.ajax({
+                    url: '{% url "search_listings" %}',
+                    data: { search: searchQuery },
+                    dataType: 'json',
+                    success: function (data) {
+                        var jobsList = $('#jobs-list');
+                        jobsList.empty();
+                        if (data.jobs.length > 0) {
+                            data.jobs.forEach(function (job) {
+                                jobsList.append(`
+                                    <li>
+                                        <a href="/job/${job.id}/"><strong>${job.title}</strong></a><br>
+                                        Domain: ${job.domain_name}<br>
+                                        Location: ${job.location}<br>
+                                        Posted on: ${job.posted_date}<br>
+                                        <a href="/apply/job/${job.id}/" class="btn btn-info" style="color:white">Apply</a>
+                                    </li>
+                                `);
+                            });
+                        } else {
+                            jobsList.append('<li>No jobs available.</li>');
+                        }
+
+                        var internshipsList = $('#internships-list');
+                        internshipsList.empty();
+                        if (data.internships.length > 0) {
+                            data.internships.forEach(function (internship) {
+                                internshipsList.append(`
+                                    <li>
+                                        <a href="/internship/${internship.id}/"><strong>${internship.title}</strong></a><br>
+                                        Domain: ${internship.domain_name}<br>
+                                        Location: ${internship.location}<br>
+                                        Posted on: ${internship.posted_date}<br>
+                                        <a href="/apply/internship/${internship.id}/" class="btn btn-info" style="color:white">Apply</a>
+                                    </li>
+                                `);
+                            });
+                        } else {
+                            internshipsList.append('<li>No internships available.</li>');
+                        }
+                    }
+                });
+            }
+
+            // Initial load of job and internship listings
+            updateListings();
+
+            // Event listener for the search form submission
+            $('#job-search-form').on('submit', function (event) {
+                event.preventDefault();
+                const searchQuery = $('#job-search-input').val();
+                updateListings(searchQuery);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ internship.title }} Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ internship.title }}</h1>
+        <p><strong>Location:</strong> {{ internship.location }}</p>
+        <p><strong>Description:</strong></p>
+        <p>{{ internship.description }}</p>
+        <h3>Registered Users</h3>
+        <ul>
+            {% for user in registered_users %}
+                <li>{{ user.username }} ({{ user.email }})</li>
+            {% empty %}
+                <li>No users have registered for this internship yet.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</body>
+</html>

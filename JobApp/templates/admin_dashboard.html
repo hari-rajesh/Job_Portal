@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #212529;
+            color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1,
+        h2 {
+            color: #f8f9fa;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+        }
+
+        .navbar-dark .navbar-nav .nav-link {
+            color: #f8f9fa;
+        }
+
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #e9ecef;
+        }
+
+        .section {
+            margin-top: 20px;
+        }
+
+        .section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #343a40;
+            border: 1px solid #495057;
+            border-radius: 5px;
+        }
+
+        .section ul li a {
+            color: #17a2b8;
+            text-decoration: none;
+        }
+
+        .section ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .delete-btn {
+            color: #dc3545;
+            text-decoration: none;
+        }
+
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+
+        .edit-btn {
+            color: #28a745;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .edit-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Admin Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#profile-section">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#manage-users">Manage Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#manage-jobs">Manage Jobs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#manage-internships">Manage Internships</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <div id="profile-section" class="container">
+        <h1>Profile</h1>
+        <div class="profile-details" id="profile-details">
+            <h2>Profile Details</h2>
+            <div id="profile-info">
+                {% load static %}
+                {% if profile.photo %}
+                <img src="{{ profile.photo.url }}" alt="Profile Photo">
+                {% else %}
+                <img src="{% static 'default-profile.png' %}" alt="Default Profile Photo">
+                {% endif %}
+                <p><strong>Admin Name:</strong> {{ profile.user.username }}</p>
+                <p><strong>Age:</strong> {{ profile.age }}</p>
+                <p><strong>Email:</strong> {{ profile.user.email }}</p>
+                <p><strong>Phone Number:</strong> {{ profile.phone_number }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Users Section -->
+    <div id="manage-users" class="container section">
+        <h2>Manage Users</h2>
+        <ul>
+            {% for user in users %}
+            {% if not user.is_superuser %}
+            <li>
+                <strong>Username:</strong> {{ user.username }}<br>
+                <strong>Email:</strong> {{ user.email }}<br>
+                <strong>Date Joined:</strong> {{ user.date_joined|date:"F j, Y" }}<br>
+                <a href="{% url 'delete_user' user.pk %}" class="delete-btn">Delete</a><br>
+                <button type="button" class="btn btn-info mt-2" data-toggle="modal" data-target="#jobsModal{{ user.pk }}">
+                    Registered Jobs
+                </button>
+                <button type="button" class="btn btn-info mt-2"
+                    data-toggle="modal" data-target="#internshipsModal{{ user.pk }}">
+                    Registered Internships
+                </button>
+            </li>
+
+            <!-- Jobs Modal -->
+            <div class="modal fade" id="jobsModal{{ user.pk }}" tabindex="-1"
+                aria-labelledby="jobsModalLabel{{ user.pk }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark text-white">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="jobsModalLabel{{ user.pk }}">Registered Jobs for {{ user.username }}</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                {% for job in user.job_set.all %}
+                                <li>
+                                    <strong>{{ job.title }}</strong><br>
+                                    Location: {{ job.location }}<br>
+                                    Posted on: {{ job.posted_date|date:"F j, Y" }}<br>
+                                    Domain: {{ job.domain_name }}<br>
+                                </li>
+                                {% empty %}
+                                <li>No registered jobs.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internships Modal -->
+            <div class="modal fade" id="internshipsModal{{ user.pk }}" tabindex="-1"
+                aria-labelledby="internshipsModalLabel{{ user.pk }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark text-white">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="internshipsModalLabel{{ user.pk }}">Registered Internships for
+                                {{ user.username }}</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                {% for internship in user.internship_set.all %}
+                                <li>
+                                    <strong>{{ internship.title }}</strong><br>
+                                    Location: {{ internship.location }}<br>
+                                    Posted on: {{ internship.posted_date|date:"F j, Y" }}<br>
+                                    Domain: {{ internship.domain_name }}<br>
+                                </li>
+                                {% empty %}
+                                <li>No registered internships.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <li>No users registered.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Manage Jobs Section -->
+    <div id="manage-jobs" class="container section">
+        <h2>Manage Jobs</h2>
+        <a href="{% url 'add_job' %}" class="btn btn-primary">Add New Job</a>
+        <ul>
+            {% for job in jobs %}
+            <li>
+                <a href="{% url 'job_overview' job.pk %}">
+                    <strong>{{ job.title }}</strong>
+                </a><br>
+                Location: {{ job.location }}<br>
+                Posted on: {{ job.posted_date|date:"F j, Y" }}<br>
+                Domain: {{ job.domain_name }}<br>
+                <a href="{% url 'edit_job' job.pk %}" class="edit-btn">Edit</a>
+                <a href="{% url 'delete_job' job.pk %}" class="delete-btn">Delete</a>
+            </li>
+            {% empty %}
+            <li>No jobs available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Manage Internships Section -->
+    <div id="manage-internships" class="container section">
+        <h2>Manage Internships</h2>
+        <a href="{% url 'add_internship' %}" class="btn btn-primary">Add New Internship</a>
+        <ul>
+            {% for internship in internships %}
+            <li>
+                <a href="{% url 'internship_overview' internship.pk %}">
+                    <strong>{{ internship.title }}</strong>
+                </a><br>
+                Location: {{ internship.location }}<br>
+                Posted on: {{ internship.posted_date|date:"F j, Y" }}<br>
+                Domain: {{ internship.domain_name }}<br>
+                <a href="{% url 'edit_internship' internship.pk %}" class="edit-btn">Edit</a>
+                <a href="{% url 'delete_internship' internship.pk %}" class="delete-btn">Delete</a>
+            </li>
+            {% empty %}
+            <li>No internships available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

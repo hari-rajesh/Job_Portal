@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply</title>
+</head>
+<body>
+    <h1>Apply for {{ item_type|title }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="additional_info" placeholder="Additional Information" required></textarea>
+        <button type="submit">Apply</button>
+    </form>
+    <a href="{% url 'user_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

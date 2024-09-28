@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ job.title }} - Job Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #212529; /* Dark background */
+            color: #f8f9fa; /* Light text color */
+            padding: 20px;
+        }
+        .container {
+            background-color: #343a40; /* Darker container background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+        }
+        h1 {
+            color: #f8f9fa; /* Light text color for heading */
+        }
+        .btn-primary {
+            background-color: #007bff; /* Primary button color */
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker button on hover */
+        }
+        .btn-secondary {
+            background-color: #6c757d; /* Secondary button color */
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268; /* Darker secondary button on hover */
+        }
+        p {
+            margin-bottom: 10px;
+        }
+        strong {
+            color: #f8f9fa; /* Light text color for strong tags */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ job.title }}</h1>
+        <p><strong>Location:</strong> {{ job.location }}</p>
+        <p><strong>Domain:</strong> {{ job.domain_name }}</p>
+        <p><strong>Posted on:</strong> {{ job.posted_on|date:"F j, Y" }}</p>
+        <p><strong>Description:</strong></p>
+        <p>{{ job.description }}</p>
+        <a href="{% url 'apply_job' job.id %}" class="btn btn-primary">Apply for this Job</a>
+        <a href="{% url 'user_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</body>
+</html>
