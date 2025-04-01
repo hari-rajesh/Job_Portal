@@ -1,11 +1,23 @@
-**Job Search Portal**
-A job search platform built using HTML, CSS, Django, and REST API.
+# **🚀 Job Search Portal**  
 
-Features:
-Admin: Can add jobs and internships.
+A simple job search platform built using **HTML, CSS, Django, and REST API**.  
 
-Job Seeker: Can browse jobs and apply by uploading a resume.
+## **✨ Features:**  
 
-Role-Based Access Control (**RBAC**): Separate access for Admin and Job Seekers.
+### 🔹 **Admin:**  
+✅ Add jobs and internships  
 
-This project is designed for learning purposes and demonstrates basic CRUD operations, authentication, and file uploads in Django.
+### 🔹 **Job Seeker:**  
+✅ Browse job listings  
+✅ Apply for jobs by uploading a resume  
+
+### 🔹 **Role-Based Access Control (RBAC):**  
+✅ Separate access for Admin and Job Seekers  
+
+This project is designed for **learning purposes** and demonstrates:  
+🛠️ **CRUD operations** (Create, Read, Update, Delete)  
+🔐 **Authentication**  
+📂 **File uploads in Django**  
+
+---  
+💡 *Built for learning and experimentation!* 🚀
